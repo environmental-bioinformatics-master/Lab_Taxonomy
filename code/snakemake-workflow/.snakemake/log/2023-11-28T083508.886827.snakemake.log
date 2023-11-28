@@ -1,0 +1,51 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 2
+Rules claiming more threads will be scaled down.
+Job stats:
+job                count
+---------------  -------
+all                    1
+subsample_fasta        2
+total                  3
+
+Select jobs to execute...
+
+[Tue Nov 28 08:35:10 2023]
+rule subsample_fasta:
+    input: /vortexfs1/omics/alexander/data/TARA/PRJEB4352-snakmake-output/prodigal/SO-all-SRF-180-2000.00/proteins.faa
+    output: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta
+    jobid: 1
+    reason: Missing output files: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta
+    wildcards: size_fraction=large
+    resources: tmpdir=/tmp
+
+
+[Tue Nov 28 08:35:10 2023]
+rule subsample_fasta:
+    input: /vortexfs1/omics/alexander/data/TARA/PRJEB4352-snakmake-output/prodigal/SO-all-SRF-0.8-5.00/proteins.faa
+    output: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+    jobid: 2
+    reason: Missing output files: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+    wildcards: size_fraction=small
+    resources: tmpdir=/tmp
+
+[Tue Nov 28 08:35:10 2023]
+Finished job 1.
+1 of 3 steps (33%) done
+[Tue Nov 28 08:35:10 2023]
+Finished job 2.
+2 of 3 steps (67%) done
+Select jobs to execute...
+
+[Tue Nov 28 08:35:10 2023]
+localrule all:
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta, ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+    jobid: 0
+    reason: Input files updated by another job: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta, ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+    resources: tmpdir=/tmp
+
+[Tue Nov 28 08:35:10 2023]
+Finished job 0.
+3 of 3 steps (100%) done
+Complete log: .snakemake/log/2023-11-28T083508.886827.snakemake.log

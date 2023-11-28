@@ -1,0 +1,40 @@
+The flag 'temp' used in rule sourmash_taxonomy is only valid for outputs, not inputs.
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 36
+Rules claiming more threads will be scaled down.
+Provided resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954
+Select jobs to execute...
+
+[Tue Nov 28 11:11:15 2023]
+rule generate_reads:
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+    output: ../../output/taxonomy_annotation_workflow/simulated_raw_reads/small.fasta
+    jobid: 0
+    reason: Missing output files: ../../output/taxonomy_annotation_workflow/simulated_raw_reads/small.fasta
+    wildcards: size_fraction=small
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=/tmp
+
+java -ea -Xmx40g -cp /vortexfs1/home/akrinos/.conda/envs/ssub22/envs/snakemake7/opt/bbmap-39.01-1/current/ align2.RandomReads3 build=1 -Xmx40g ref=../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta out=../../output/taxonomy_annotation_workflow/simulated_raw_reads/small.fasta length=150 reads=1000000 paired=f
+Executing align2.RandomReads3 [build=1, -Xmx40g, ref=../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta, out=../../output/taxonomy_annotation_workflow/simulated_raw_reads/small.fasta, length=150, reads=1000000, paired=f]
+
+Writing reference.
+Executing dna.FastaToChromArrays2 [../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta, 1, writeinthread=false, genscaffoldinfo=true, retain, waitforwriting=false, gz=true, maxlen=536670912, writechroms=true, minscaf=1, midpad=500, nodisk=false]
+
+Set genScaffoldInfo=true
+Deleting chr1.chrom.gz
+Writing chunk 1
+Waiting for writing to finish.
+Finished.
+snpRate=0.0, max=0, unique=true
+insRate=0.0, max=0, len=(0-0)
+delRate=0.0, max=0, len=(0-0)
+subRate=0.0, max=0, len=(0-0)
+nRate  =0.0, max=0, len=(0-0)
+genome=1
+PERFECT_READ_RATIO=0.0
+ADD_ERRORS_FROM_QUALITY=true
+REPLACE_NOREF=false
+paired=false
+read length=150
+reads=1000000

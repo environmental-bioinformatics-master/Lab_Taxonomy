@@ -1,0 +1,13 @@
+#Summary
+#Generated on	Tue Nov 28 11:11:16 EST 2023
+#Version	5
+chroms	1
+bases	7204991
+defined	569951
+undefined	6635040
+contigs	39834
+scaffolds	10000
+interpad	500
+source	/vortexfs1/omics/alexander/akrinos/2023-env-bioinformatics/Lab_Taxonomy/output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+bytes	3400444
+last modified	1701178510000

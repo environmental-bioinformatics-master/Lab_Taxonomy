@@ -1,0 +1,106 @@
+import os
+import pandas as pd
+import numpy as np
+
+UniRef90="/vortexfs1/omics/alexander/data/databases/mmseqs2/UniRef90"
+UniRef100="/vortexfs1/omics/alexander/data/databases/mmseqs2/UniRef100"
+
+small_sf="/vortexfs1/omics/alexander/data/TARA/PRJEB4352-snakmake-output/prodigal/SO-all-SRF-0.8-5.00/proteins.faa"
+large_sf="/vortexfs1/omics/alexander/data/TARA/PRJEB4352-snakmake-output/prodigal/SO-all-SRF-180-2000.00/proteins.faa"
+
+OUTPUTDIR="../../output/taxonomy_annotation_workflow"
+
+def return_file(size_fract):
+    if size_fract=="small":
+        return small_sf
+    else:
+        return large_sf
+
+def select_database(database_id):
+    if database_id=="UniRef90":
+        return UniRef90
+    else:
+        return UniRef100
+    
+rule all:
+    input:
+        subsampled_fastas = expand(os.path.join(OUTPUTDIR,"subsampled_assemblies","{size_fraction}.fasta"),
+                                                size_fraction=["large","small"]),
+        simulated_reads = expand(os.path.join(OUTPUTDIR,"simulated_raw_reads","{size_fraction}.fasta"),
+                                 size_fraction=["large","small"]),
+        mmseqs_result = expand(os.path.join(OUTPUTDIR,"mmseqs_{database}","{size_fraction}.tsv"),
+                               size_fraction=["large","small"],database=["UniRef90","UniRef100"]),
+        sourmash_csv=expand(os.path.join(OUTPUTDIR,"sourmash_lca","{size_fraction}.csv"),
+                            size_fraction=["large","small"])
+        
+rule subsample_fasta:
+    input:
+        tara_assembly = lambda wildcards: return_file(wildcards.size_fraction)
+    output:
+        subset_tara_assembly = os.path.join(OUTPUTDIR,"subsampled_assemblies","{size_fraction}.fasta")
+    shell:
+        """
+        seqtk sample -s100 {input.tara_assembly} 10000 > {output.subset_tara_assembly}
+        """
+        
+rule generate_reads:
+    input:
+        subset_tara_assembly = os.path.join(OUTPUTDIR,"subsampled_assemblies","{size_fraction}.fasta")
+    output:
+        simulated_raw_reads = os.path.join(OUTPUTDIR,"simulated_raw_reads","{size_fraction}.fasta")
+    params:
+        length=150,
+        library_size=1000000
+    shell:
+        """
+        randomreads.sh -Xmx40g ref={input.subset_tara_assembly} out={output.simulated_raw_reads} length={params.length} reads={params.library_size} paired=f
+        """
+        
+rule mmseqs_taxonomy:
+    input:
+        subset_tara_assembly = os.path.join(OUTPUTDIR,"subsampled_assemblies","{size_fraction}.fasta")
+    output:
+        mmseqs_result = os.path.join(OUTPUTDIR,"mmseqs_{database}","{size_fraction}.tsv")
+    params:
+        mmseqs_database=lambda wildcards: select_database(wildcards.database),
+        query_db=os.path.join(OUTPUTDIR,"mmseqs_{database}","{size_fraction}_query"),
+        tmp_mmseqs=os.path.join(OUTPUTDIR,"mmseqs_{database}","{size_fraction}_tmp"),
+        mmseqs_result_folder = os.path.join(OUTPUTDIR,"mmseqs_{database}","{size_fraction}")
+    shell:
+        """
+        mmseqs createdb {input.subset_tara_assembly} {params.query_db}
+        mmseqs taxonomy {params.query_db} {params.mmseqs_database} {params.mmseqs_result_folder} {params.tmp_mmseqs}
+        mmseqs createtsv {params.query_db} {params.mmseqs_result_folder} {output.mmseqs_result}
+        """
+        
+rule download_genbank:
+    output:
+        output_genbank=temp(os.path.join(OUTPUTDIR,"databases","genbank-k31.lca.json.gz"))
+    params:
+        osf_url="https://osf.io/4f8n3/download"
+    shell:
+        """
+        curl -L -o {output.output_genbank} {params.osf_url}
+        """
+        
+rule sourmash_taxonomy:
+    input:
+        subset_tara_assembly = os.path.join(OUTPUTDIR,"subsampled_assemblies","{size_fraction}.fasta"),
+        output_genbank=temp(os.path.join(OUTPUTDIR,"databases","genbank-k31.lca.json.gz"))
+    output:
+        sourmash_csv=os.path.join(OUTPUTDIR,"sourmash_lca","{size_fraction}.csv")
+    shell:
+        """
+        sourmash sketch dna -p scaled=1000,k=31 {input.subset_tara_assembly} --singleton
+        sourmash lca classify --db {input.output_genbank} --query {input.subset_tara_assembly}.sig -o {output.sourmash_csv}
+        """
+        
+rule kraken:
+    input:
+        
+    output:
+        
+    shell:
+        """
+        kraken2-build --download-library nr --db $DBNAME
+        """

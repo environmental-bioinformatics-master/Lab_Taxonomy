@@ -1,0 +1,57 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 2
+Rules claiming more threads will be scaled down.
+Job stats:
+job               count
+--------------  -------
+all                   1
+generate_reads        2
+total                 3
+
+Select jobs to execute...
+
+[Tue Nov 28 09:05:57 2023]
+rule generate_reads:
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta
+    output: ../../output/taxonomy_annotation_workflow/simulated_raw_reads/large.fasta
+    jobid: 3
+    reason: Missing output files: ../../output/taxonomy_annotation_workflow/simulated_raw_reads/large.fasta
+    wildcards: size_fraction=large
+    resources: tmpdir=/tmp
+
+
+[Tue Nov 28 09:05:57 2023]
+rule generate_reads:
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+    output: ../../output/taxonomy_annotation_workflow/simulated_raw_reads/small.fasta
+    jobid: 4
+    reason: Missing output files: ../../output/taxonomy_annotation_workflow/simulated_raw_reads/small.fasta
+    wildcards: size_fraction=small
+    resources: tmpdir=/tmp
+
+[Tue Nov 28 09:05:57 2023]
+Error in rule generate_reads:
+    jobid: 3
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta
+    output: ../../output/taxonomy_annotation_workflow/simulated_raw_reads/large.fasta
+    shell:
+        
+        randomreads.sh ref=../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta out=../../output/taxonomy_annotation_workflow/simulated_raw_reads/large.fasta length=150 reads=1000000 paired=f
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Tue Nov 28 09:05:57 2023]
+Error in rule generate_reads:
+    jobid: 4
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+    output: ../../output/taxonomy_annotation_workflow/simulated_raw_reads/small.fasta
+    shell:
+        
+        randomreads.sh ref=../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta out=../../output/taxonomy_annotation_workflow/simulated_raw_reads/small.fasta length=150 reads=1000000 paired=f
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2023-11-28T090556.105403.snakemake.log

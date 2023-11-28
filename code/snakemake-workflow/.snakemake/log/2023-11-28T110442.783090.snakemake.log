@@ -1,0 +1,138 @@
+The flag 'temp' used in rule sourmash_taxonomy is only valid for outputs, not inputs.
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cluster nodes: 100
+Job stats:
+job                  count
+-----------------  -------
+all                      1
+download_genbank         1
+generate_reads           2
+mmseqs_taxonomy          4
+sourmash_taxonomy        2
+total                   10
+
+Select jobs to execute...
+
+[Tue Nov 28 11:04:44 2023]
+rule generate_reads:
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta
+    output: ../../output/taxonomy_annotation_workflow/simulated_raw_reads/large.fasta
+    jobid: 3
+    reason: Forced execution
+    wildcards: size_fraction=large
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=<TBD>
+
+Submitted job 3 with external jobid '94154'.
+
+[Tue Nov 28 11:04:47 2023]
+rule mmseqs_taxonomy:
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+    output: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small.tsv
+    jobid: 8
+    reason: Missing output files: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small.tsv
+    wildcards: database=UniRef100, size_fraction=small
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=<TBD>
+
+Submitted job 8 with external jobid '94155'.
+
+[Tue Nov 28 11:04:47 2023]
+rule mmseqs_taxonomy:
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta
+    output: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/large.tsv
+    jobid: 5
+    reason: Missing output files: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/large.tsv
+    wildcards: database=UniRef90, size_fraction=large
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=<TBD>
+
+Submitted job 5 with external jobid '94156'.
+
+[Tue Nov 28 11:04:47 2023]
+rule mmseqs_taxonomy:
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+    output: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/small.tsv
+    jobid: 7
+    reason: Missing output files: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/small.tsv
+    wildcards: database=UniRef90, size_fraction=small
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=<TBD>
+
+Submitted job 7 with external jobid '94157'.
+
+[Tue Nov 28 11:04:47 2023]
+rule generate_reads:
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+    output: ../../output/taxonomy_annotation_workflow/simulated_raw_reads/small.fasta
+    jobid: 4
+    reason: Missing output files: ../../output/taxonomy_annotation_workflow/simulated_raw_reads/small.fasta
+    wildcards: size_fraction=small
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=<TBD>
+
+Submitted job 4 with external jobid '94158'.
+
+[Tue Nov 28 11:04:47 2023]
+rule download_genbank:
+    output: ../../output/taxonomy_annotation_workflow/databases/genbank-k31.lca.json.gz
+    jobid: 10
+    reason: Missing output files: ../../output/taxonomy_annotation_workflow/databases/genbank-k31.lca.json.gz
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=<TBD>
+
+Submitted job 10 with external jobid '94159'.
+
+[Tue Nov 28 11:04:47 2023]
+rule mmseqs_taxonomy:
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta
+    output: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/large.tsv
+    jobid: 6
+    reason: Missing output files: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/large.tsv
+    wildcards: database=UniRef100, size_fraction=large
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=<TBD>
+
+Submitted job 6 with external jobid '94160'.
+[Tue Nov 28 11:11:25 2023]
+Error in rule mmseqs_taxonomy:
+    jobid: 8
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+    output: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small.tsv
+    shell:
+        
+        mmseqs createdb ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small_query
+        mmseqs taxonomy ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small_query /vortexfs1/omics/alexander/data/databases/mmseqs2/UniRef100 ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small_tmp
+        mmseqs createtsv ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small_query ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small.tsv
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+    cluster_jobid: 94155
+
+Error executing rule mmseqs_taxonomy on cluster (jobid: 8, external: 94155, jobscript: /vortexfs1/omics/alexander/akrinos/2023-env-bioinformatics/Lab_Taxonomy/code/snakemake-workflow/.snakemake/tmp.5sflhcfn/snakejob.mmseqs_taxonomy.8.sh). For error details see the cluster log and the log files of the involved rule(s).
+[Tue Nov 28 11:11:25 2023]
+Error in rule mmseqs_taxonomy:
+    jobid: 5
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta
+    output: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/large.tsv
+    shell:
+        
+        mmseqs createdb ../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/large_query
+        mmseqs taxonomy ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/large_query /vortexfs1/omics/alexander/data/databases/mmseqs2/UniRef90 ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/large ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/large_tmp
+        mmseqs createtsv ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/large_query ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/large ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/large.tsv
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+    cluster_jobid: 94156
+
+Error executing rule mmseqs_taxonomy on cluster (jobid: 5, external: 94156, jobscript: /vortexfs1/omics/alexander/akrinos/2023-env-bioinformatics/Lab_Taxonomy/code/snakemake-workflow/.snakemake/tmp.5sflhcfn/snakejob.mmseqs_taxonomy.5.sh). For error details see the cluster log and the log files of the involved rule(s).
+[Tue Nov 28 11:11:25 2023]
+Error in rule mmseqs_taxonomy:
+    jobid: 7
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+    output: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/small.tsv
+    shell:
+        
+        mmseqs createdb ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/small_query
+        mmseqs taxonomy ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/small_query /vortexfs1/omics/alexander/data/databases/mmseqs2/UniRef90 ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/small ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/small_tmp
+        mmseqs createtsv ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/small_query ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/small ../../output/taxonomy_annotation_workflow/mmseqs_UniRef90/small.tsv
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+    cluster_jobid: 94157
+
+Error executing rule mmseqs_taxonomy on cluster (jobid: 7, external: 94157, jobscript: /vortexfs1/omics/alexander/akrinos/2023-env-bioinformatics/Lab_Taxonomy/code/snakemake-workflow/.snakemake/tmp.5sflhcfn/snakejob.mmseqs_taxonomy.7.sh). For error details see the cluster log and the log files of the involved rule(s).
+[Tue Nov 28 11:11:25 2023]
+Finished job 10.
+1 of 10 steps (10%) done

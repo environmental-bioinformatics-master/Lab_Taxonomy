@@ -1,0 +1,40 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 2
+Rules claiming more threads will be scaled down.
+Job stats:
+job                count
+---------------  -------
+all                    1
+generate_reads         2
+mmseqs_taxonomy        4
+total                  7
+
+Select jobs to execute...
+
+[Tue Nov 28 09:16:44 2023]
+rule generate_reads:
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta
+    output: ../../output/taxonomy_annotation_workflow/simulated_raw_reads/large.fasta
+    jobid: 3
+    reason: Missing output files: ../../output/taxonomy_annotation_workflow/simulated_raw_reads/large.fasta
+    wildcards: size_fraction=large
+    resources: tmpdir=/tmp
+
+
+[Tue Nov 28 09:16:44 2023]
+rule mmseqs_taxonomy:
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+    output: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small.tsv
+    jobid: 8
+    reason: Missing output files: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small.tsv
+    wildcards: database=UniRef100, size_fraction=small
+    resources: tmpdir=/tmp
+
+RuleException in rule mmseqs_taxonomy in file /vortexfs1/omics/alexander/akrinos/2023-env-bioinformatics/Lab_Taxonomy/code/snakemake-workflow/Snakefile, line 57:
+NameError: The name 'subset_tara_assembly' is unknown in this context. Please make sure that you defined that variable. Also note that braces not used for variable access have to be escaped by repeating them, i.e. {{print $1}}, when formatting the following:
+
+        mmseqs createdb {subset_tara_assembly} {params.query_db}
+        mmseqs taxonomy {params.query_db} {params.mmseqs_database} {params.mmseqs_result_folder} {params.tmp_mmseqs}
+        mmseqs createtsv {params.query_db} {params.mmseqs_result_folder} {output.mmseqs_result}
+        

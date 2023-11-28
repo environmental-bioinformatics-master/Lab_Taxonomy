@@ -1,0 +1,59 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 2
+Rules claiming more threads will be scaled down.
+Job stats:
+job                count
+---------------  -------
+all                    1
+generate_reads         2
+mmseqs_taxonomy        4
+total                  7
+
+Select jobs to execute...
+
+[Tue Nov 28 09:30:11 2023]
+rule generate_reads:
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta
+    output: ../../output/taxonomy_annotation_workflow/simulated_raw_reads/large.fasta
+    jobid: 3
+    reason: Forced execution
+    wildcards: size_fraction=large
+    resources: tmpdir=/tmp
+
+
+[Tue Nov 28 09:30:11 2023]
+rule mmseqs_taxonomy:
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+    output: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small.tsv
+    jobid: 8
+    reason: Missing output files: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small.tsv
+    wildcards: database=UniRef100, size_fraction=small
+    resources: tmpdir=/tmp
+
+[Tue Nov 28 09:30:12 2023]
+Error in rule mmseqs_taxonomy:
+    jobid: 8
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta
+    output: ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small.tsv
+    shell:
+        
+        mmseqs createdb ../../output/taxonomy_annotation_workflow/subsampled_assemblies/small.fasta ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small_query
+        mmseqs taxonomy ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small_query /vortexfs1/omics/alexander/data/databases/mmseqs2/UniRef100 ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small_tmp
+        mmseqs createtsv ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small_query ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small ../../output/taxonomy_annotation_workflow/mmseqs_UniRef100/small.tsv
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Terminating processes on user request, this might take some time.
+[Tue Nov 28 09:40:10 2023]
+Error in rule generate_reads:
+    jobid: 3
+    input: ../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta
+    output: ../../output/taxonomy_annotation_workflow/simulated_raw_reads/large.fasta
+    shell:
+        
+        randomreads.sh -Xmx40g ref=../../output/taxonomy_annotation_workflow/subsampled_assemblies/large.fasta out=../../output/taxonomy_annotation_workflow/simulated_raw_reads/large.fasta length=150 reads=1000000 paired=f
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Complete log: .snakemake/log/2023-11-28T093009.838980.snakemake.log
