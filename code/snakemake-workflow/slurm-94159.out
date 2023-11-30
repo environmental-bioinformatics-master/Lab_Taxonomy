@@ -1,22 +1,0 @@
-The flag 'temp' used in rule sourmash_taxonomy is only valid for outputs, not inputs.
-Building DAG of jobs...
-Using shell: /usr/bin/bash
-Provided cores: 36
-Rules claiming more threads will be scaled down.
-Provided resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954
-Select jobs to execute...
-
-[Tue Nov 28 11:11:14 2023]
-rule download_genbank:
-    output: ../../output/taxonomy_annotation_workflow/databases/genbank-k31.lca.json.gz
-    jobid: 0
-    reason: Missing output files: ../../output/taxonomy_annotation_workflow/databases/genbank-k31.lca.json.gz
-    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=/tmp
-
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   459  100   459    0     0   1544      0 --:--:-- --:--:-- --:--:--  1540100   459  100   459    0     0   1543      0 --:--:-- --:--:-- --:--:--  1540
-  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0 41  119M   41 49.2M    0     0  21.7M      0  0:00:05  0:00:02  0:00:03 54.3M100  119M  100  119M    0     0  42.2M      0  0:00:02  0:00:02 --:--:-- 81.2M
-[Tue Nov 28 11:11:17 2023]
-Finished job 0.
-1 of 1 steps (100%) done
