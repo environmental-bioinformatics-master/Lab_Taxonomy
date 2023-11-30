@@ -1,0 +1,3 @@
+EUKulele was run at the following time, using the following file locations:
+Time was 2023-11-28 22:37:32.211124 and database marmmetsp was downloaded.
+The reference URL was: https://www.dropbox.com/s/fnsg4bq6o95pwjb/reference.pep.fa.gz?dl=1 and the URL of the taxonomy table was: https://www.dropbox.com/s/w1uv1j9qr63z3ac/taxonomy_table.txt?dl=1Time finished was 2023-11-28 22:37:32.167285 for database marmmetspTime finished was 2023-11-29 08:45:47.224073 for database marmmetsp

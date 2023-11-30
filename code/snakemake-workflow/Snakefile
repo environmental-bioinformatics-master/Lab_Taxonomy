@@ -8,6 +8,9 @@ UniRef100="/vortexfs1/omics/alexander/data/databases/mmseqs2/UniRef100"
 small_sf="/vortexfs1/omics/alexander/data/TARA/PRJEB4352-snakmake-output/prodigal/SO-all-SRF-0.8-5.00/proteins.faa"
 large_sf="/vortexfs1/omics/alexander/data/TARA/PRJEB4352-snakmake-output/prodigal/SO-all-SRF-180-2000.00/proteins.faa"
 
+small_sf_nt="/vortexfs1/omics/alexander/data/TARA/PRJEB4352-snakmake-output/megahit/SO-all-SRF-0.8-5.00/final.contigs.fa"
+large_sf_nt="/vortexfs1/omics/alexander/data/TARA/PRJEB4352-snakmake-output/megahit/SO-all-SRF-180-2000.00/final.contigs.fa"
+
 OUTPUTDIR="../../output/taxonomy_annotation_workflow"
 
 def return_file(size_fract):
@@ -16,22 +19,47 @@ def return_file(size_fract):
     else:
         return large_sf
 
+def return_file_nt(size_fract):
+    if size_fract=="small":
+        return small_sf_nt
+    else:
+        return large_sf_nt
+
 def select_database(database_id):
     if database_id=="UniRef90":
         return UniRef90
     else:
         return UniRef100
-    
+
+def get_database_path(database_id):    
+    if database_id=="Database1":
+        return "/vortexfs1/omics/alexander/akrinos/2022-euk-diversity/output/tara-eukulele-mapping/EUKulele_databases/marmmetsp_all_phaeo"
+    elif database_id=="Database2":
+        return "/vortexfs1/omics/alexander/akrinos/2022-euk-diversity/output/tara-eukulele-mapping/EUKulele_databases/marmmetsp_plus_colonies_group"
+    elif database_id=="Database3":
+        return "/vortexfs1/omics/alexander/akrinos/2022-euk-diversity/output/tara-eukulele-mapping/EUKulele_databases/marmmetsp_plus_free_group"
+    elif database_id=="Database4":
+        return "/vortexfs1/omics/alexander/data/databases/marmmetsp-5Dec2022/"
+
 rule all:
     input:
         subsampled_fastas = expand(os.path.join(OUTPUTDIR,"subsampled_assemblies","{size_fraction}.fasta"),
                                                 size_fraction=["large","small"]),
-        simulated_reads = expand(os.path.join(OUTPUTDIR,"simulated_raw_reads","{size_fraction}.fasta"),
-                                 size_fraction=["large","small"]),
-        mmseqs_result = expand(os.path.join(OUTPUTDIR,"mmseqs_{database}","{size_fraction}.tsv"),
-                               size_fraction=["large","small"],database=["UniRef90","UniRef100"]),
-        sourmash_csv=expand(os.path.join(OUTPUTDIR,"sourmash_lca","{size_fraction}.csv"),
-                            size_fraction=["large","small"])
+#        simulated_reads = expand(os.path.join(OUTPUTDIR,
+#                                 "simulated_raw_reads",
+#                                 "{size_fraction}.fasta"),
+#                                 size_fraction=["large","small"]),
+#        mmseqs_result = expand(os.path.join(OUTPUTDIR,"mmseqs_{database}",
+#                                "{size_fraction}.tsv"),
+#                                size_fraction=["large","small"],
+#                                database=["UniRef90","UniRef100"]),
+        sourmash_csv=expand(os.path.join(OUTPUTDIR,"sourmash_lca_protozoa",
+                            "{size_fraction}.csv"),
+                            size_fraction=["large","small"]),
+        eukulele_results=expand(os.path.join(OUTPUTDIR,"EUKulele_{database}",
+                        "taxonomy_estimation","done.txt"),
+                        database=["Database1","Database2",
+                                  "Database3","Database4"])
         
 rule subsample_fasta:
     input:
@@ -43,6 +71,18 @@ rule subsample_fasta:
         seqtk sample -s100 {input.tara_assembly} 10000 > {output.subset_tara_assembly}
         """
         
+rule subsample_fasta_nt:
+    input:
+        tara_assembly = lambda wildcards: return_file_nt(wildcards.size_fraction)
+    output:
+        subset_tara_assembly = os.path.join(OUTPUTDIR,
+                                "subsampled_assemblies_nt",
+                                "{size_fraction}.fasta")
+    shell:
+        """
+        seqtk sample -s100 {input.tara_assembly} 10000 > {output.subset_tara_assembly}
+        """
+
 rule generate_reads:
     input:
         subset_tara_assembly = os.path.join(OUTPUTDIR,"subsampled_assemblies","{size_fraction}.fasta")
@@ -82,19 +122,70 @@ rule download_genbank:
         """
         curl -L -o {output.output_genbank} {params.osf_url}
         """
+
+rule download_genbank_euk:
+    output:
+        output_genbank=temp(os.path.join(OUTPUTDIR,"databases","genbank-protozoa.csv.gz")),
+        output_genbank_fa=temp(os.path.join(OUTPUTDIR,"databases","genbank-protozoa.k31.zip"))
+        #output_genbank=temp(os.path.join(OUTPUTDIR,"databases","genbank-protozoa-k31.lca.json.gz"))
+    params:
+        #url="https://farm.cse.ucdavis.edu/~ctbrown/sourmash-db/genbank-2022.03/genbank-2022.03-protozoa-k31.zip"
+        url="https://farm.cse.ucdavis.edu/~ctbrown/sourmash-db/genbank-2022.03/genbank-2022.03-protozoa.lineages.csv.gz",
+        url2="https://farm.cse.ucdavis.edu/~ctbrown/sourmash-db/genbank-2022.03/genbank-2022.03-protozoa-k31.zip"
+    shell:
+        """
+        curl -L -o {output.output_genbank} {params.url}
+        curl -L -o {output.output_genbank_fa} {params.url2}
+        """
         
-rule sourmash_taxonomy:
+rule sourmash_genbank:
     input:
-        subset_tara_assembly = os.path.join(OUTPUTDIR,"subsampled_assemblies","{size_fraction}.fasta"),
-        output_genbank=temp(os.path.join(OUTPUTDIR,"databases","genbank-k31.lca.json.gz"))
+        subset_tara_assembly = os.path.join(OUTPUTDIR,"subsampled_assemblies_nt","{size_fraction}.fasta"),
+        output_genbank=temp(os.path.join(OUTPUTDIR,"databases","genbank-k31.lca.json.gz")),
     output:
         sourmash_csv=os.path.join(OUTPUTDIR,"sourmash_lca","{size_fraction}.csv")
     shell:
         """
-        sourmash sketch dna -p scaled=1000,k=31 {input.subset_tara_assembly} --singleton
-        sourmash lca classify --db {input.output_genbank} --query {input.subset_tara_assembly}.sig -o {output.sourmash_csv}
+        sourmash sketch translate -p scaled=1000,k=31 {input.subset_tara_assembly} --singleton
+        assembly_id=$(echo {input.subset_tara_assembly} | rev | cut -f1 -d"/" | rev)
+        sourmash lca classify --db {input.output_genbank} --query "$assembly_id".sig -o {output.sourmash_csv}
         """
-        
+rule sourmash_prozoa:
+    input:
+        subset_tara_assembly = os.path.join(OUTPUTDIR,"subsampled_assemblies_nt","{size_fraction}.fasta"),
+        output_genbank=temp(os.path.join(OUTPUTDIR,"databases","genbank-protozoa.csv.gz")),
+        output_genbank_fa=temp(os.path.join(OUTPUTDIR,"databases","genbank-protozoa.k31.zip"))
+    output:
+        sourmash_csv=os.path.join(OUTPUTDIR,"sourmash_lca_protozoa","{size_fraction}.csv"),
+        temp_csv=temp(os.path.join(OUTPUTDIR,"sourmash_lca_protozoa","{size_fraction}_temp.csv"))
+    shell:
+        """
+        sourmash sketch dna -p scaled=1000,k=31 {input.subset_tara_assembly} --singleton
+        assembly_id=$(echo {input.subset_tara_assembly} | rev | cut -f1 -d"/" | rev)
+        #sourmash gather "$assembly_id".sig genbankprotozo.lca.json -o {output.temp_csv}
+        sourmash lca classify --query "$assembly_id".sig  --db genbankprotozo.lca.json -o {output.sourmash_csv}
+        #sourmash tax metagenome --taxonomy taxonomy_protozoa_gtdb.csv --gather-csv {output.temp_csv} -o {output.sourmash_csv}
+        """
+
+
+rule eukulele:
+    input:
+        expand(os.path.join(OUTPUTDIR,"subsampled_assemblies",
+            "{size_fraction}.fasta"),
+            size_fraction=["large","small"])
+    output:
+        eukulele_done = os.path.join(OUTPUTDIR,"EUKulele_{database}",
+                        "taxonomy_estimation","done.txt")
+    params:
+        output_folder = os.path.join(OUTPUTDIR,"EUKulele_{database}"),
+        reference_dir = lambda wildcards: get_database_path(wildcards.database),
+        sample_dir=os.path.join(OUTPUTDIR,"subsampled_assemblies")
+    shell:
+        """
+        EUKulele --sample_dir {params.sample_dir} --consensus_proportion 0.97 --reference_dir {params.reference_dir} -o {params.output_folder} --mets_or_mags mets --p_ext .fasta
+        touch {output.eukulele_done}
+        """
+
 rule kraken:
     input:
         
